@@ -16,27 +16,27 @@ int main(){
 		 
 		 Timer_initialize();
 
-		 GPIOB->MODER = 0x4000;		   //PB7 pin as Trigger Pin of Ultrasonic sensor
-		 GPIOC->MODER = 0x0000;      //PC6 is set to input mode to capture data from Echo pin of ultrasonic sensor
-		 GPIOB->MODER |=0x10000000;	 //Setting PB14 as output for RED led.
-		 GPIOB->MODER|= (1<<10);     //Select PB5 as Output for controlling BLDC Motor
+		 GPIOB->MODER = 0x4000;		//PB7 pin as Trigger Pin of Ultrasonic sensor
+		 GPIOC->MODER = 0x0000;      	//PC6 is set to input mode to capture data from Echo pin of ultrasonic sensor
+		 GPIOB->MODER |=0x10000000;	//Setting PB14 as output for RED led.
+		 GPIOB->MODER|= (1<<10);     	//Select PB5 as Output for controlling BLDC Motor
 		 GPIOE->MODER |= 0x100;
 		
-		 TIM2->PSC=0; 							 // Prescaler of Timer2 is set to zero
-		 GPIOB->ODR = 0x00;			     // Clearing ODR register
+		 TIM2->PSC=0; 			// Prescaler of Timer2 is set to zero
+		 GPIOB->ODR = 0x00;		// Clearing ODR register
 
 		 int y=0;
 	
-		 while(1) // This loop initializes BLDC Motor
+		 while(1) 	// This loop initializes BLDC Motor This runs for single time after power ON.
 			{
 				if(GPIOC->IDR & 0X2000) //Senses Input from the USER Push Button connnected to PC13
 				{     
 						while(y<250)
 						{
-							GPIOB->ODR^=(1<<5); //Sending PWM Signal to PB5
-							delay(999);     // Delays 1000 micro seconds 
+							GPIOB->ODR^=(1<<5); 	//Sending PWM Signal to PB5
+							delay(999);     	// Delays 1000 micro seconds 
 							GPIOB->ODR^=(1<<5);
-							delay(18999);    // Delays 19000 micro seconds 
+							delay(18999);    	// Delays 19000 micro seconds 
 							y=y+1;
 						}
 						break;
@@ -44,46 +44,46 @@ int main(){
 			}        
 			while(1)
 				{
-						if(GPIOC->IDR & 0X2000) //Senses Input from the USER Push Button
-						{ 
-							 while(1)
-								{
-										data=0;
-										TIM2_us_Delay(10);	// Sends 10micro seconds pulse to Trigger pin
-								  	GPIOB->ODR =0x80;		// Making PB7 pin as high
-									  TIM2_us_Delay(10);
-										GPIOB->ODR =0x00;            
-										TIM2_us_Delay(10);
-										while(GPIOC->IDR & 0x40) // Reading on time of input pulse from PC6(ECHO Pin)
-											{
-												data=data+1;
-											}
-										
-										if (data > 0)  
-											{
-												 time = data*(0.0625*0.000001);	// Coverting data in to time
-												 dist = ((time*340)/2)*1000;		// Converting time in to distance
-												 if (dist <100)  // If distance less than 10cm speed increases to fly over the obstacle
-													 {
-												      GPIOB->ODR =0x4000;
-											        GPIOB->ODR^=(1<<5); //Turns Connected to PB5
-											        delay(2000); // Delays 2000 micro seconds
-											        GPIOB->ODR^=(1<<5);
-											        delay(20000-2000);
-													    dist=0;
-												   }
-												 else if (data>=100)// If distance greater than 10cm speed decreases
-												   {
-															GPIOB->ODR^=(1<<5); //Turns Connected to PB5
-															delay(1100); // Delays 1100 micro seconds
-															GPIOB->ODR^=(1<<5);
-															delay(20000-1100);
-															dist=0;
-													}
-											
-											}
-											
+				if(GPIOC->IDR & 0X2000) 		//Senses Input from the USER Push Button
+				{ 
+					 while(1)
+						{
+						data=0;
+						TIM2_us_Delay(10);	// Sends 10micro seconds pulse to Trigger pin
+						GPIOB->ODR =0x80;	// Making PB7 pin as high
+						TIM2_us_Delay(10);
+						GPIOB->ODR =0x00;            
+						TIM2_us_Delay(10);
+						while(GPIOC->IDR & 0x40) // Reading on time of input pulse from PC6(ECHO Pin)
+							{
+							data=data+1;
 							}
+						
+						if (data > 0)  
+							{
+								time = data*(0.0625*0.000001);	// Coverting data in to time
+								dist = ((time*340)/2)*1000;	// Converting time in to distance
+								if (dist <100)  // If distance less than 10cm speed increases to fly over the obstacle
+								{
+									GPIOB->ODR =0x4000;
+									GPIOB->ODR^=(1<<5); //Turns Connected to PB5
+									delay(2000); // Delays 2000 micro seconds
+									GPIOB->ODR^=(1<<5);
+									delay(20000-2000);
+									dist=0;
+								}
+								 else if (data>=100)// If distance greater than 10cm speed decreases
+								{
+									GPIOB->ODR^=(1<<5); //Turns Connected to PB5
+									delay(1100); // Delays 1100 micro seconds
+									GPIOB->ODR^=(1<<5);
+									delay(20000-1100);
+									dist=0;
+								}
+									
+							}
+											
+						}
 										
 					 }
 				}
