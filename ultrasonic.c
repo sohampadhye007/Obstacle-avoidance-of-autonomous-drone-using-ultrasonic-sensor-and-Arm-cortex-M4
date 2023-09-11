@@ -10,9 +10,9 @@ double static time,dist;   //variable for collecting the distance, time etc.
 int main(){
 
 		 int speed;
-		 RCC->AHB1ENR |= 0x04;				//Enable GPIOC clock
-		 RCC->AHB1ENR |= 0x2;					//Enable GPIOB clock	
-		 RCC->APB1ENR |=0x1; 				 // Enable clock for Timer2
+		 RCC->AHB1ENR |= 0x04;	//Enable GPIOC clock
+		 RCC->AHB1ENR |= 0x2;		//Enable GPIOB clock	
+		 RCC->APB1ENR |=0x1; 		// Enable clock for Timer2
 		 
 		 Timer_initialize();
 
